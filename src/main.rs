@@ -1,5 +1,6 @@
 extern crate getopts;
 extern crate image;
+extern crate regex;
 extern crate rustc_serialize;
 
 use getopts::{
@@ -10,6 +11,7 @@ use image::{
     Rgb,
     RgbImage,
 };
+use regex::Regex;
 use rustc_serialize::hex::FromHex;
 use std::env;
 use std::path::Path;
@@ -65,9 +67,49 @@ fn do_work(matches: Matches) {
 
 /// Create the image with the given options.
 fn create_image(options: ImageOptions) -> RgbImage {
+    let regex = Regex::new(options.regex.as_str()).unwrap();
+
     RgbImage::from_fn(options.size, options.size, |x, y| {
-        Rgb(options.off_color)
+        let pixel_id = pixel_string(x, y, options.size);
+
+        if regex.is_match(pixel_id.as_str()) {
+            Rgb(options.on_color)
+        } else {
+            Rgb(options.off_color)
+        }
     })
+}
+
+/// Convert a pixel position into a string as "1121324"
+fn pixel_string(x: u32, y: u32, size: u32) -> String {
+    let mut cx = x;
+    let mut cy = y;
+
+    let mut half = size / 2;
+    let mut id: String = String::new();
+
+    let sqrt = (size as f64).sqrt() as usize + 1;
+    id.reserve(sqrt);
+
+    while half > 1 {
+        if cx >= half && cy < half {
+            id.push('1');
+            cx -= half;
+        } else if cx < half && cy < half {
+            id.push('2');
+        } else if cx < half && cy >= half {
+            id.push('3');
+            cy -= half;
+        } else {
+            id.push('4');
+            cx -= half;
+            cy -= half;
+        }
+
+        half = half / 2;
+    }
+
+    id
 }
 
 /// Print the program usage.
