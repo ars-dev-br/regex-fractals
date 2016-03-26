@@ -6,4 +6,5 @@ authors = ["Andre Ramaciotti <andre@ramaciotti.com>"]
 [dependencies]
 getopts = "0.2"
 image = "*"
+regex = "*"
 rustc-serialize = "*"
