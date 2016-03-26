@@ -1,0 +1,7 @@
+[package]
+name = "regex-fractals"
+version = "0.1.0"
+authors = ["Andre Ramaciotti <andre@ramaciotti.com>"]
+
+[dependencies]
+getopts = "0.2"
