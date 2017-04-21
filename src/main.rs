@@ -81,9 +81,9 @@ fn create_image(options: ImageOptions) -> RgbImage {
 
         if regex.is_match(pixel_id.as_str()) {
             let captures = regex.captures(pixel_id.as_str()).unwrap();
-            let t = match captures.at(1) {
-                Some(c) => c.len() as f64 / pixel_id.len() as f64,
-                None => 0 as f64
+            let t = match captures.get(1) {
+                Some(c) => (c.end() - c.start()) as f64 / pixel_id.len() as f64,
+                None => 0.0 as f64
             };
 
             Rgb(color_lerp(t, options.on_color, options.match_color))
@@ -194,4 +194,3 @@ fn main() {
         return;
     };
 }
-
